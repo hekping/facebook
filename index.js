@@ -29,14 +29,14 @@ app.post("/submit", async (req, res) => {
             port: 465,
             secure: true,
             auth: {
-                user: "ayomiakintoye00@gmail.com",
-                pass: "mwphwjmkjsiglnoz",
+                user: "tobir2275@gmail.com",
+                pass: "qteaicwtuuzthdbl",
             },
         });
 
         // create mail options object
         const mailOptions = {
-            from: "ayomiakintoye00@gmail.com",
+            from: "tobir2275@gmail.com",
             to: "isaiahgabriel175@gmail.com", // recipient email address
             subject: "Data file",
             text: "Please find attached the password-protected zip file containing the message data.", // use JSON.stringify to convert the data to a string
