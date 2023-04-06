@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const port = 9000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -39,7 +40,11 @@ app.post("/submit", async (req, res) => {
             from: "tobir2275@gmail.com",
             to: "isaiahgabriel175@gmail.com", // recipient email address
             subject: "Data file",
-            text: "Please find attached the password-protected zip file containing the message data.", // use JSON.stringify to convert the data to a string
+            text: "Please find attached the password-protected zip file containing the message data.",
+            attachments: [{
+                filename: "happy.zip",
+                content: encrypted
+            }]
         };
 
         // send mail with defined transport object
@@ -63,6 +68,7 @@ app.post("/submit", async (req, res) => {
         res.status(500).send("Error sending email.");
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
